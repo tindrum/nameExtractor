@@ -9,13 +9,23 @@
 // From this one input (proper name), we have generated five outputs. 
 // In order to get these outputs, we should define some business rules.
 
-var nameExtractor = {
-    inputString: "", 
+function nameExtractor(rawString) {
     
-    splitInput: [ ],
     
-    splitInputString: (input) => {
-        
+    this.inputString = rawString || "", 
+    
+    this.splitInput = [ ],
+    
+    this.splitInput = () => {
+        this.splitInput = this.inputString.split(/\s+/)    
     }
     
+    
+    
 }
+
+var ne = new nameExtractor();
+ne.inputString = "Daniel Henderson";
+ne.splitInput();
+
+console.log(ne);
