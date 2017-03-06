@@ -22,17 +22,21 @@ Array.prototype.clean = function(deleteValue) {
 
 function NameExtractor(rawString) {
     
-    this.inputString = rawString || "", 
+    this.nameString = rawString || "", 
     
-    this.inputArray = [ ]
+    this.nameArray = [ ],
+    
+    this.ExtractWords();
+    this.FindTitle();
+    this.FindSuffix();
     
 }
 
 // use a regex to split the string into an array.
 // Save TitleList and SuffixList as *properties* of the prototype.
-NameExtractor.prototype.TitleList = "Mr.,Mr,Ms.,Ms,Miss.,Miss,Dr.,Dr,Mrs.,Mrs,Fr.,Capt.,Lt.,Gen.,President,Sister,Father,Brother,Major".split(/,/);
+NameExtractor.prototype.TitleList = ("Mr.,Mr,Ms.,Ms,Miss.,Miss,Dr.,Dr,Mrs.,Mrs,Fr.,Capt.,Lt.,Gen.,President,Sister,Father,Brother,Major".split(/,/))
 
-NameExtractor.prototype.SuffixList = "DDS,CFA,CEO,CFO,Esq,CPA,MBA,PhD,MD,DC,Sr,Jr,II,III,IV".split(/,/);
+NameExtractor.prototype.SuffixList = ("DDS,CFA,CEO,CFO,Esq,CPA,MBA,PhD,MD,DC,Sr,Jr,II,III,IV".split(/,/));
 
 
 // JavaScript uses a prototype chain. 
@@ -47,27 +51,46 @@ NameExtractor.prototype.SuffixList = "DDS,CFA,CEO,CFO,Esq,CPA,MBA,PhD,MD,DC,Sr,J
 
 // Public methods
 NameExtractor.prototype.ExtractWords = function() {
-        this.inputArray = this.inputString.split(/[\s,:\.]+/);
-        this.inputArray = this.inputArray.filter(entry => entry.trim() != ''); // remove empty elements from array
-        if (! this.validArrayLength()) {
-            const arrayLength = this.inputArray.length;
-            console.log("Array has improper length");
+        this.nameArray = this.nameString.split(/[\s,:\.]+/);
+        this.nameArray = this.nameArray.filter(entry => entry.trim() != ''); // remove empty elements from array
+            const arrayLength = this.nameArray.length;
             if ( arrayLength <= 0) {
-                console.log("No elements in array.");
+                console.error("No elements in array.");
             } else if ( arrayLength > 5 ) {
-                console.log("Chopping off " + arrayLength - 5 + " elements from the end.");
-                console.log("You're going to lose " + this.inputArray.slice(5, arrayLength));
-                this.inputArray.slice(0, 4);
+                console.error("Chopping off " + arrayLength - 5 + " elements from the end.");
+                console.error("You're going to lose " + this.nameArray.slice(5, arrayLength));
+                this.nameArray.slice(0, 4);
             }
-            
-        }
 };
+
 NameExtractor.prototype.FindTitle = function() {
-    
+    if (this.nameArray.length > 0) {
+        if ( this.TitleList.indexOf(this.nameArray[0]) >= 0 ) {
+            this.mTitle = this.nameArray[0];
+            return 0;
+        } else {
+            return -1; // no title
+        }
+    }
+    return -1; 
 };
 
 NameExtractor.prototype.FindSuffix = function() {
-    
+    if ( this.nameArray[4] ) {
+        this.mSuffix = this.nameArray[4];
+        return 0;
+    } else {
+        if ( this.nameArray[2] && this.SuffixList.indexOf(this.nameArray[2] >= 0 )) {
+            this.mSuffix = this.nameArray[2];
+            return 0;
+        }
+        if ( this.nameArray[3] && this.SuffixList.indexOf(this.nameArray[3] >= 0 )) {
+            this.mSuffix = this.nameArray[3];
+            return 0;
+            }
+            
+    }
+    return -1;
 };
 
 NameExtractor.prototype.ParseName = function() {
@@ -81,7 +104,7 @@ NameExtractor.prototype.ParseName = function() {
 // confirm that the correct number of words were gotten from the string
 // and are in the array
 NameExtractor.prototype.validArrayLength = function() {
-        if ( this.inputArray.length < 1 || this.inputArray.length > 5 ) {
+        if ( this.nameArray.length < 1 || this.nameArray.length > 5 ) {
             return false;
         }
         return true;
@@ -90,15 +113,20 @@ NameExtractor.prototype.validArrayLength = function() {
 
 
 var ne = new NameExtractor();
-ne.inputString = "Daniel Henderson";
+ne.nameString = "Daniel Henderson";
 ne.ExtractWords();
 
 var another = new NameExtractor("Mrs. Deborah Karen Henderson, Esq.");
-console.log(another.ExtractWords());
 
 console.log(ne);
 console.log(another);
 
 var emptyName = new NameExtractor("");
-emptyName.ExtractWords();
+console.log(emptyName);
+console.log(another.mTitle);
 
+var thurston = new NameExtractor("Thurston Howell III");
+console.log(thurston);
+
+var pinski = new NameExtractor("Dr. Drew Pinski");
+console.log(pinski);
