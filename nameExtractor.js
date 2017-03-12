@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // The Name Extractor takes the text input of an English/American proper name 
 // (i.e. "Mr. John Smith") and extracts the following information from it:
 
