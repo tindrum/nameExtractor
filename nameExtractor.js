@@ -113,21 +113,24 @@ NameExtractor.prototype.validArrayLength = function() {
 
 
 
-var ne = new NameExtractor();
-ne.nameString = "Daniel Henderson";
-ne.ExtractWords();
+// var ne = new NameExtractor();
+// ne.nameString = "Daniel Henderson";
+// ne.ExtractWords();
+//
+// var another = new NameExtractor("Mrs. Deborah Karen Henderson, Esq.");
+//
+// console.log(ne);
+// console.log(another);
+//
+// var emptyName = new NameExtractor("");
+// console.log(emptyName);
+// console.log(another.mTitle);
+//
+// var thurston = new NameExtractor("Thurston Howell III");
+// console.log(thurston);
+//
+// var pinski = new NameExtractor("Dr. Drew Pinski");
+// console.log(pinski);
+//
 
-var another = new NameExtractor("Mrs. Deborah Karen Henderson, Esq.");
-
-console.log(ne);
-console.log(another);
-
-var emptyName = new NameExtractor("");
-console.log(emptyName);
-console.log(another.mTitle);
-
-var thurston = new NameExtractor("Thurston Howell III");
-console.log(thurston);
-
-var pinski = new NameExtractor("Dr. Drew Pinski");
-console.log(pinski);
+module.exports = NameExtractor
