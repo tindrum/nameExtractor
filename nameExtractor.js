@@ -22,15 +22,21 @@ Array.prototype.clean = function(deleteValue) {
 
 
 function NameExtractor(rawString) {
-    
-    this.nameString = rawString || "", 
-    
-    this.nameArray = [ ],
-    
-    this.ExtractWords();
-    this.FindTitle();
-    this.FindSuffix();
-    
+  
+  this.nameString = rawString || "", 
+  
+  this.nameArray = [ ],
+  
+  this.mTitle = "",
+  this.mFirst = "",
+  this.mMiddle = "",
+  this.mLast = "",
+  this.mSuffix = "",
+  
+  this.ExtractWords();
+  this.FindTitle();
+  this.FindSuffix();
+  
 }
 
 // use a regex to split the string into an array.
