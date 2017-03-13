@@ -27,15 +27,10 @@ function NameExtractor(rawString) {
   
   this.nameArray = [ ],
   
-  this.mTitle = "",
-  this.mFirst = "",
-  this.mMiddle = "",
-  this.mLast = "",
-  this.mSuffix = "",
-  
-  this.ExtractWords();
-  this.FindTitle();
-  this.FindSuffix();
+  // this.ExtractWords();
+  // this.FindTitle();
+  // this.FindSuffix();
+  this.ParseName();
   
 }
 
@@ -62,11 +57,12 @@ NameExtractor.prototype.ExtractWords = function() {
         this.nameArray = this.nameArray.filter(entry => entry.trim() != ''); // remove empty elements from array
             const arrayLength = this.nameArray.length;
             if ( arrayLength <= 0) {
-                console.error("No elements in array.");
+                // console.error("No elements in array.");
+                throw 'no names to process';
             } else if ( arrayLength > 5 ) {
-                console.error("Chopping off " + arrayLength - 5 + " elements from the end.");
-                console.error("You're going to lose " + this.nameArray.slice(5, arrayLength));
-                this.nameArray.slice(0, 4);
+              // name has too many elements,
+              // throw an exception 
+              throw 'too many names';
             }
 };
 
@@ -83,25 +79,133 @@ NameExtractor.prototype.FindTitle = function() {
 };
 
 NameExtractor.prototype.FindSuffix = function() {
-    if ( this.nameArray[4] ) {
-        this.mSuffix = this.nameArray[4];
-        return 0;
-    } else {
-        if ( this.nameArray[2] && this.SuffixList.indexOf(this.nameArray[2] >= 0 )) {
-            this.mSuffix = this.nameArray[2];
-            return 0;
-        }
-        if ( this.nameArray[3] && this.SuffixList.indexOf(this.nameArray[3] >= 0 )) {
-            this.mSuffix = this.nameArray[3];
-            return 0;
-            }
+  // Unlike the sample code,
+  // this function returns the location in the array
+  // where the suffix is found. 
+  //
+  if ( this.nameArray[4] && this.SuffixList.indexOf(this.nameArray[4]) >= 0) {
+      this.mSuffix = this.nameArray[4];
+      return 4;
+  } 
+  if ( this.nameArray[3] && this.SuffixList.indexOf(this.nameArray[3]) >= 0 ) {
+      this.mSuffix = this.nameArray[3];
+      return 3;
+  }
+  if ( this.nameArray[2] && this.SuffixList.indexOf(this.nameArray[2]) >= 0 ) {
+      this.mSuffix = this.nameArray[2];
+      return 2;
+  }
+  if ( this.nameArray[1] && this.SuffixList.indexOf(this.nameArray[1]) >= 0 ) {
+      this.mSuffix = this.nameArray[1];
+      return 1;
+  }
             
-    }
+    
     return -1;
 };
 
-NameExtractor.prototype.ParseName = function() {
+NameExtractor.prototype.FindLastName = function() {
+  // The location in the array where the suffix is found
+  // is one position past where the last name is found.
+  // 
+  var lastLocation = -1;
+  switch (this.suffixLocation) {
+  case -1:
+    // no suffix, so still don't know where last name is.
+    // Last name will be last item in array.
+    var lastItem = this.nameArray.length - 1;
+    this.mLast = this.nameArray[lastItem];
+    lastLocation = lastItem;
+    // console.log("Finding Last Name, no suffix branch");
+    // console.log(this.nameArray);
+    break;
+  case 4:
+    // last name is at index 3
+    this.mLast = this.nameArray[3];
+    lastLocation = 3;
+    break;
     
+  case 3:
+    // last name is at index 2
+    this.mLast = this.nameArray[2];
+    lastLocation = 2;
+    break;
+    
+  case 2:
+    // last name is at index 1
+    this.mLast = this.nameArray[1];
+    lastLocation = 1;
+    break;
+    
+  case 1:
+    // last name is at index 0
+    this.mLast = this.nameArray[0];
+    lastLocation = 0;
+    break;
+    
+  default:
+    throw 'name input string has too many words';
+    
+  }
+  return lastLocation;
+};
+
+NameExtractor.prototype.FindFirstName = function() {
+  if (this.titleLocation == 0) {
+    // name has a title
+    if (this.lastNameLocation == 1 ) {
+      // no first name
+      return -1;
+    } else {
+      this.mFirst = this.nameArray[1];
+      return 1;
+    }
+  } else {
+    // name does not have a title
+    if (this.lastNameLocation == 0) {
+      // only one name, a last name
+      return -1;
+    } else {
+      this.mFirst = this.nameArray[0];
+      return 0;
+    }
+  }
+  throw 'first name error';
+};
+
+NameExtractor.prototype.FindMiddleName = function() {
+  if ( this.firstNameLocation >= 0 && ((this.firstNameLocation + 2) == this.lastNameLocation )) {
+    // the first name is not empty, AND
+    // there is a gap of one between first and last, 
+    // must be a middle name
+    this.mMiddle = this.nameArray[this.firstNameLocation + 1];
+  }
+};
+
+NameExtractor.prototype.ParseName = function() {
+  // initial values
+  this.mTitle = "";
+  this.mFirst = "";
+  this.mMiddle = "";
+  this.mLast = "";
+  this.mSuffix = "";
+  this.suffixLocation = 0;
+  this.titleLocation = -1;
+  this.lastNameLocation = -1;
+  this.firstNameLocation = -1;
+  
+  if (( this.nameString != null ) && ( this.nameString != "")) {
+    this.ExtractWords();
+    this.titleLocation = this.FindTitle();
+    this.suffixLocation = this.FindSuffix();
+    this.lastNameLocation = this.FindLastName();
+    this.firstNameLocation = this.FindFirstName();
+    this.FindMiddleName();
+  }
+  // console.log(this.nameArray);
+  // console.log(this.nameArray.length);
+  // console.log(this.mSuffix + this.suffixLocation);
+  // console.log("last name is at: " + this.lastNameLocation);
 };
 
 // Private methods
